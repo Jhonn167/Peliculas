@@ -1,0 +1,12 @@
+# Node.js
+node_modules/
+.env
+
+# Railway / local build
+dist/
+build/
+*.log
+
+# macOS y VSCode
+.DS_Store
+.vscode/

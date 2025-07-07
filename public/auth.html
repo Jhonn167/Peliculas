@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Autenticación</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      text-align: center;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .auth-container {
+      margin-top: 3rem;
+    }
+
+    .auth-buttons button {
+      font-size: 1rem;
+      margin: 1rem;
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-login {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-register {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .modal-content button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bienvenido</h1>
+  <p>Inicia sesión o crea tu cuenta para registrar tus películas.</p>
+
+  <div class="auth-container">
+    <div class="auth-buttons">
+      <button class="btn-login" onclick="mostrarModal('login')">Iniciar sesión</button>
+      <button class="btn-register" onclick="mostrarModal('registro')">Crear cuenta</button>
+    </div>
+  </div>
+
+  <!-- Modal de Login -->
+  <div class="modal" id="modal-login">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal('login')">&times;</span>
+      <h2>Iniciar sesión</h2>
+      <form id="form-login">
+        <input type="email" id="correo-login" placeholder="Correo" required>
+        <input type="password" id="contraseña-login" placeholder="Contraseña" required>
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Registro -->
+  <div class="modal" id="modal-registro">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal('registro')">&times;</span>
+      <h2>Crear cuenta</h2>
+      <form id="form-registro">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="email" id="correo-registro" placeholder="Correo" required>
+        <input type="password" id="contraseña-registro" placeholder="Contraseña" required>
+        <button type="submit">Registrarse</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function mostrarModal(tipo) {
+      document.getElementById('modal-' + tipo).style.display = 'flex';
+    }
+
+    function cerrarModal(tipo) {
+      document.getElementById('modal-' + tipo).style.display = 'none';
+    }
+
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const correo = document.getElementById('correo-login').value;
+      const contraseña = document.getElementById('contraseña-login').value;
+
+      const res = await fetch('http://localhost:3000/api/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo, contraseña })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('usuario', JSON.stringify(data));
+        window.location.href = 'dashboard.html';
+      } else {
+        alert(data.error || 'Error al iniciar sesión');
+      }
+    });
+
+    document.getElementById('form-registro').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const correo = document.getElementById('correo-registro').value;
+      const contraseña = document.getElementById('contraseña-registro').value;
+
+      const res = await fetch('http://localhost:3000/api/usuarios/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, correo, contraseña })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('usuario', JSON.stringify(data));
+        window.location.href = 'dashboard.html';
+      } else {
+        alert(data.error || 'Error al registrar');
+      }
+    });
+  </script>
+
+</body>
+</html>
